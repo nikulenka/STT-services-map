@@ -146,6 +146,7 @@ tbody tr.row{border-bottom:1px solid var(--border);transition:.15s;cursor:pointe
 tbody tr.row:hover{background:var(--panel-alt);}
 tbody tr.row.hidden{display:none;}
 td{padding:11px 10px;vertical-align:top;}
+.num-col{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dimmer);width:1%;white-space:nowrap;}
 .svc-name{font-weight:600;font-size:13.5px;margin-bottom:3px;display:flex;align-items:flex-start;gap:8px;}
 .chev{display:inline-block;width:9px;flex-shrink:0;color:var(--text-dimmer);transition:transform .18s;margin-top:3px;font-size:10px;}
 .row.expanded .chev{transform:rotate(90deg);color:var(--text);}
@@ -226,6 +227,7 @@ footer{margin-top:26px;font-size:11.5px;color:var(--text-dimmer);font-family:'IB
     <table id="tbl">
       <thead>
         <tr>
+          <th data-k="num">№</th>
           <th data-k="name">Сервис</th>
           <th data-k="group">Группа</th>
           <th data-k="type">Тип выгоды</th>
@@ -353,7 +355,7 @@ const services = [
  sell:"За транзакцию или подписка для e-grocery и B2B-продавцов на маркетплейсах — тиражирование уже решённого кейса как готовый продукт, быстрый time-to-market."},
 ];
 
-services.forEach((s,i)=>{s.ice = +((s.impact+s.confidence+s.ease)/3).toFixed(1); s.id=i;});
+services.forEach((s,i)=>{s.ice = +((s.impact+s.confidence+s.ease)/3).toFixed(1); s.id=i; s.num=i+1;});
 
 let activeFilter = 'all';
 let sortKey = 'ice', sortDir = -1;
@@ -383,6 +385,7 @@ function renderTable(){
     tr.className = 'row' + (isHidden?' hidden':'') + (isOpen?' expanded':'');
     tr.dataset.id = s.id;
     tr.innerHTML = `
+      <td class="num-col">${s.num}</td>
       <td><div class="svc-name"><span class="chev">&#9656;</span>${s.name}</div><div class="svc-desc">${s.desc}</div></td>
       <td class="grp">${s.group}</td>
       <td><span class="tag"><span class="dot" style="background:${TYPE_COLOR[s.type]}"></span>${TYPE_LABEL[s.type]}</span></td>
@@ -404,7 +407,7 @@ function renderTable(){
 
     const dtr = document.createElement('tr');
     dtr.className = 'detail-row' + (isOpen?' open':'') + (isHidden?' hidden':'');
-    dtr.innerHTML = `<td colspan="5">${detailHTML(s)}</td>`;
+    dtr.innerHTML = `<td colspan="6">${detailHTML(s)}</td>`;
     tbody.appendChild(dtr);
   });
 }
@@ -444,7 +447,7 @@ document.querySelectorAll('.chip').forEach(chip=>{
 document.querySelectorAll('thead th').forEach(th=>{
   th.addEventListener('click',()=>{
     const k = th.dataset.k;
-    if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir = (k==='name'||k==='group')?1:-1;}
+    if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir = (k==='name'||k==='group'||k==='num')?1:-1;}
     renderTable();
   });
 });
